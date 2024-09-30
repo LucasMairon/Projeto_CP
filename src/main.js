@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Boat from './elements_class/boat.js';
 
 // variáveis para movimentação do barco e camera
@@ -31,20 +30,46 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-const controls = new OrbitControls( camera, renderer.domElement );
-controls.update(); 
 
 const light = new THREE.AmbientLight( 0xffffff );
 scene.add(light)
 
-const boat = new Boat(scene,"./models/boat/boat.gltf");
+const texture_load = new THREE.TextureLoader();
+
+function create_material_with_texture(texture_path, normal_map_path='', BackSide=true){
+	const material =  new THREE.MeshPhongMaterial({map: texture_load.load(texture_path)});
+	if (normal_map_path)
+		material.normalMap = texture_load.load(normal_map_path);
+	if (BackSide)
+		material.side = THREE.BackSide;
+	return material;
+}
+
+const cube_scene_materials = [
+	create_material_with_texture("./texture/scene_right.png"),
+	create_material_with_texture("./texture/scene_left.png"),
+	create_material_with_texture("./texture/scene_top.png"),
+	create_material_with_texture("./texture/scene_bottom.png"),
+	create_material_with_texture("./texture/scene_front.png"),
+	create_material_with_texture("./texture/scene_back.png"),
+]
+
+const CUBE_SCENE_WIDTH = 500;
+const CUBE_SCENE_HEIGHT = 50;
+const CUBE_SCENE_DEPTH = 500;
+
+const cube_scene_geometry = new THREE.BoxGeometry(CUBE_SCENE_WIDTH, CUBE_SCENE_HEIGHT, CUBE_SCENE_DEPTH);
+const cube_scene = new THREE.Mesh(cube_scene_geometry, cube_scene_materials);
+scene.add(cube_scene);
+
+
+const boat = new Boat(cube_scene,"./models/boat/boat.gltf",0, -24.28, 0 );
 
 function animate() {
     renderer.render( scene, camera );
-    controls.update();
     if(boat.model){
         boat.move(keys);
-        move_camera()
+        move_camera();
     }
 }
 renderer.setAnimationLoop( animate );

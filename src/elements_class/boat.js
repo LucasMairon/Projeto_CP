@@ -4,7 +4,10 @@ const UPPER_LIMIT_ROTATE_Z = (Math.PI / 2);
 const LOWER_LIMIT_ROTATE_Z = -(Math.PI / 2);
 
 export class Boat{
-    constructor(scene, model_path){
+    constructor(scene, model_path, initial_pos_x=0, initial_pos_y=0, initial_pos_z=0){
+        this.initial_pos_x = initial_pos_x
+        this.initial_pos_y = initial_pos_y
+        this.initial_pos_z = initial_pos_z
         this.scene = scene;
         this.model_path = model_path
         this.model = null
@@ -23,6 +26,7 @@ export class Boat{
             function ( gltf ) {
                 object.scene.add( gltf.scene );
                 object.model = gltf.scene.children[0];
+                object.model.position.set(object.initial_pos_x, object.initial_pos_y, object.initial_pos_z)
             },
             // Funcao chamada enquanto o modelo esta carregando
             function ( xhr ) {
