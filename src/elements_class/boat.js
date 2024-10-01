@@ -1,7 +1,7 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const UPPER_LIMIT_ROTATE_Z = (Math.PI / 2);
-const LOWER_LIMIT_ROTATE_Z = -(Math.PI / 2);
+const UPPER_LIMIT_ROTATE_Z = (Math.PI / 4);
+const LOWER_LIMIT_ROTATE_Z = -(Math.PI / 4);
 
 export class Boat{
     constructor(scene, model_path, initial_pos_x=0, initial_pos_y=0, initial_pos_z=0){
@@ -40,25 +40,30 @@ export class Boat{
     }
 
     move(move){
+        this.model.position.z -= 0.08;
+        if(this.model.rotation.z > 0.2)
+            this.model.position.x -= 0.1;
+        else if(this.model.rotation.z < -0.2)
+            this.model.position.x += 0.1;
         if (move.arrowUp){
-            this.model.position.z -= 0.1;
-            if(this.model.rotation.z > 0.2)
-                this.model.position.x -= 0.1;
-            else if(this.model.rotation.z < -0.2)
-                this.model.position.x += 0.1;
+            this.model.position.z -= 0.2;
+            // if(this.model.rotation.z > 0.2)
+            //     this.model.position.x -= 0.1;
+            // else if(this.model.rotation.z < -0.2)
+            //     this.model.position.x += 0.1;
         }
 
-        if(move.arrowDown)
-            this.model.position.z += 0.1;
+        // if(move.arrowDown)
+        //     this.model.position.z += 0.1;
 
         if(move.arrowRight){
-            this.model.position.x += 0.1;
+            // this.model.position.x += 0.1;
             if(this.model.rotation.z > LOWER_LIMIT_ROTATE_Z)
                 this.model.rotation.z -= 0.01;
         }
 
         if(move.arrowLeft){
-            this.model.position.x -= 0.1;
+            // this.model.position.x -= 0.1;
             if(this.model.rotation.z < UPPER_LIMIT_ROTATE_Z)
                 this.model.rotation.z += 0.01;
         }
