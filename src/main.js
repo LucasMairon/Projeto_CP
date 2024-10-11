@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import Boat from "./elements_class/boat.js";
+import Obstacle from "./elements_class/obstacle.js";
 
 // variáveis para movimentação do barco e camera
 const keys = {
@@ -10,16 +11,25 @@ const keys = {
   space: false,
 };
 
+const CAMERA_POSITION_Z_3_PERSON = 15;
+const CAMERA_POSITION_Y_3_PERSON = 8;
+
+const CAMERA_POSITION_Y_1_PERSON = 1.5
+
 function move_camera() {
   let position_x = boat.model.position.x;
   let position_y = boat.model.position.y;
   let position_z = boat.model.position.z;
   if (keys.space) {
-    position_y += 2;
-    position_z += 5;
+    position_y += CAMERA_POSITION_Y_3_PERSON;
+    let theta = boat.model.rotation.z;
+    position_z += Math.cos(theta) * CAMERA_POSITION_Z_3_PERSON;
+    position_x += Math.sin(theta) * CAMERA_POSITION_Z_3_PERSON;
+  }else{
+    position_y += CAMERA_POSITION_Y_1_PERSON;
   }
-  camera.position.set(position_x, position_y + 2, position_z + 7);
-  camera.lookAt(position_x, position_y, position_z);
+  camera.position.set(position_x, position_y, position_z);
+  camera.rotation.y = boat.model.rotation.z;
 }
 
 const scene = new THREE.Scene();
@@ -57,79 +67,33 @@ const cube_scene_materials = [
   create_material_with_texture("./texture/scene_back.png"),
 ];
 
-const CUBE_SCENE_WIDTH = 500;
-const CUBE_SCENE_HEIGHT = 50;
-const CUBE_SCENE_DEPTH = 500;
+const CUBE_SCENE_WIDTH = 800;
+const CUBE_SCENE_HEIGHT = 200;
+const CUBE_SCENE_DEPTH = 800;
 
 const cube_scene_geometry = new THREE.BoxGeometry(
   CUBE_SCENE_WIDTH,
   CUBE_SCENE_HEIGHT,
   CUBE_SCENE_DEPTH
 );
+
 const cube_scene = new THREE.Mesh(cube_scene_geometry, cube_scene_materials);
 scene.add(cube_scene);
+cube_scene.receiveShadow = true;
 
-function make_random_pos_z() {
-  return Math.random() * -(CUBE_SCENE_WIDTH / 2) + CUBE_SCENE_WIDTH /2  -1/2;
+
+function collision_objects(object1, object2) {
+  let d = object1.position.distanceTo(object2.position);
+  return d < 7;
 }
 
-function make_random_size() {
-  return Math.random() * 4 + 4;
-}
+Obstacle.SCENE_DEPTH = CUBE_SCENE_DEPTH;
+Obstacle.SCENE_HEIGHT = CUBE_SCENE_HEIGHT;
+Obstacle.SCENE_WIDTH = CUBE_SCENE_WIDTH;
 
-function make_random_raio() {
-  return Math.random() * 1 + 3;
-}
+const obstacles = Obstacle.create_obstacles(cube_scene);
 
-function make_random_pos_x() {
-  return Math.random() * (CUBE_SCENE_WIDTH - 1 / 2) - CUBE_SCENE_WIDTH / 2;
-}
-
-class Obstacle {
-  static DEFALT_OBSTACLE_NUMBER = 200;
-  constructor() {
-    this.model = new THREE.Mesh(
-      new THREE.SphereGeometry(
-        make_random_raio(),
-        make_random_size(),
-        make_random_size()
-      ),
-      new THREE.MeshPhongMaterial({ color: 0xe3eef4 })
-    );
-    this.model.position.set(
-      make_random_pos_x(),
-      -CUBE_SCENE_HEIGHT / 2,
-      make_random_pos_z()
-    );
-  }
-
-  move() {
-    this.model.position.z += 0.1;
-    this.model.rotation.x += 0.01;
-    this.model.rotation.y += 0.01;
-    this.model.rotation.z += 0.01;
-
-    if (this.model.position.z > CUBE_SCENE_DEPTH / 2 + 1 / 2) {
-      this.model.position.x = make_random_pos_x();
-      this.model.position.z = -CUBE_SCENE_DEPTH / 2;
-      // this.model.position.z = make_random_pos_z() / 2
-    }
-  }
-
-  static create_obstacles(number_of_obstacles = this.DEFALT_OBSTACLE_NUMBER) {
-    const obstacles = [];
-    for (let i = 0; i < number_of_obstacles; i++) {
-      const obstacle = new Obstacle();
-      obstacles.push(obstacle);
-      cube_scene.add(obstacle.model);
-    }
-    return obstacles;
-  }
-}
-
-const obstacles = Obstacle.create_obstacles();
-
-const boat = new Boat(cube_scene, "./models/boat/boat.gltf", 0, -24.28, 244.28);
+const boat = new Boat(cube_scene, "./models/boat/boat.gltf", 0, -CUBE_SCENE_HEIGHT / 2 + 1.5 , CUBE_SCENE_DEPTH / 2 - CAMERA_POSITION_Z_3_PERSON);
 
 function animate() {
   renderer.render(scene, camera);
@@ -139,6 +103,8 @@ function animate() {
   }
   obstacles.forEach((obstacle) => {
     obstacle.move();
+    if (boat.model && collision_objects(boat.model, obstacle.model))
+        obstacle.collision();
   });
 }
 
@@ -153,11 +119,6 @@ function onDocumentKeyDown(event) {
       keys.arrowUp = true;
       break;
     }
-    // case "s":
-    // case "ArrowDown": {
-    //     keys.arrowDown = true;
-    //     break;
-    // }
     case "d":
     case "ArrowRight": {
       keys.arrowRight = true;
@@ -184,11 +145,6 @@ function onDocumentKeyUp(event) {
       keys.arrowUp = false;
       break;
     }
-    // case "s":
-    // case "ArrowDown": {
-    //     keys.arrowDown = false;
-    //     break;
-    // }
     case "d":
     case "ArrowRight": {
       keys.arrowRight = false;

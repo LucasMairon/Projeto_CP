@@ -27,6 +27,7 @@ export class Boat{
                 object.scene.add( gltf.scene );
                 object.model = gltf.scene.children[0];
                 object.model.position.set(object.initial_pos_x, object.initial_pos_y, object.initial_pos_z)
+                // Object.model.material.side = THREE.BackSide;
             },
             // Funcao chamada enquanto o modelo esta carregando
             function ( xhr ) {
@@ -41,32 +42,27 @@ export class Boat{
 
     move(move){
         this.model.position.z -= 0.08;
+    
         if(this.model.rotation.z > 0.2)
             this.model.position.x -= 0.1;
         else if(this.model.rotation.z < -0.2)
             this.model.position.x += 0.1;
+
         if (move.arrowUp){
             this.model.position.z -= 0.2;
-            // if(this.model.rotation.z > 0.2)
-            //     this.model.position.x -= 0.1;
-            // else if(this.model.rotation.z < -0.2)
-            //     this.model.position.x += 0.1;
+            console.log("entrou", move.arrowUp)
         }
 
-        // if(move.arrowDown)
-        //     this.model.position.z += 0.1;
-
         if(move.arrowRight){
-            // this.model.position.x += 0.1;
             if(this.model.rotation.z > LOWER_LIMIT_ROTATE_Z)
                 this.model.rotation.z -= 0.01;
         }
-
-        if(move.arrowLeft){
-            // this.model.position.x -= 0.1;
+        if(move.arrowLeft)
             if(this.model.rotation.z < UPPER_LIMIT_ROTATE_Z)
                 this.model.rotation.z += 0.01;
-        }
+
+        // if(this.model.position.z <= this.scene.geometry.parameters.depth  + 1.5)
+        //     this.model.position.z = this.initial_pos_z;
     }
 }
 
