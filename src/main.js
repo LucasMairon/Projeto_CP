@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import Boat from "./elements_class/boat.js";
 import Obstacle from "./elements_class/obstacle.js";
+import Sun  from "./elements_class/sun.js";
 
 // variáveis para movimentação do barco e camera
 const keys = {
@@ -44,9 +45,6 @@ camera.position.set(0, 0, 0);
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
-const light = new THREE.AmbientLight(0xffffff, 2);
-scene.add(light);
 
 const texture_load = new THREE.TextureLoader();
 
@@ -95,12 +93,18 @@ const obstacles = Obstacle.create_obstacles(cube_scene);
 
 const boat = new Boat(cube_scene, "./models/boat/boat.gltf", 0, -CUBE_SCENE_HEIGHT / 2 + 1.5 , CUBE_SCENE_DEPTH / 2 - CAMERA_POSITION_Z_3_PERSON);
 
+const sun = new Sun(cube_scene, CUBE_SCENE_WIDTH / 1.6, CUBE_SCENE_HEIGHT / 2.4 , CUBE_SCENE_WIDTH, CUBE_SCENE_HEIGHT);
+Sun.SCENE_HEIGHT = CUBE_SCENE_HEIGHT;
+Sun.SCENE_WIDTH = CUBE_SCENE_WIDTH;
+
 function animate() {
   renderer.render(scene, camera);
   if (boat.model) {
     boat.move(keys);
     move_camera();
   }
+  if(sun.model)
+    sun.rotate()
   obstacles.forEach((obstacle) => {
     obstacle.move();
     if (boat.model && collision_objects(boat.model, obstacle.model))
