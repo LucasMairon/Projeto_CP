@@ -57,12 +57,12 @@ function create_material_with_texture(texture_path, BackSide = true) {
 }
 
 const cube_scene_materials = [
-  create_material_with_texture("./texture/scene_right.png"),
-  create_material_with_texture("./texture/scene_left.png"),
-  create_material_with_texture("./texture/scene_top.png"),
-  create_material_with_texture("./texture/scene_bottom.png"),
-  create_material_with_texture("./texture/scene_front.png"),
-  create_material_with_texture("./texture/scene_back.png"),
+  create_material_with_texture("./texture/cube_scene/scene_right.png"),
+  create_material_with_texture("./texture/cube_scene/scene_left.png"),
+  create_material_with_texture("./texture/cube_scene/scene_top.png"),
+  create_material_with_texture("./texture/cube_scene/scene_bottom.png"),
+  create_material_with_texture("./texture/cube_scene/scene_front.png"),
+  create_material_with_texture("./texture/cube_scene/scene_back.png"),
 ];
 
 const CUBE_SCENE_WIDTH = 800;
