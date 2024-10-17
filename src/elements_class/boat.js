@@ -41,17 +41,11 @@ export class Boat{
     }
 
     move(move){
-        this.model.position.z -= 0.08;
     
         if(this.model.rotation.z > 0.2)
             this.model.position.x -= 0.1;
         else if(this.model.rotation.z < -0.2)
             this.model.position.x += 0.1;
-
-        if (move.arrowUp){
-            this.model.position.z -= 0.2;
-            console.log("entrou", move.arrowUp)
-        }
 
         if(move.arrowRight){
             if(this.model.rotation.z > LOWER_LIMIT_ROTATE_Z)
@@ -60,9 +54,6 @@ export class Boat{
         if(move.arrowLeft)
             if(this.model.rotation.z < UPPER_LIMIT_ROTATE_Z)
                 this.model.rotation.z += 0.01;
-
-        // if(this.model.position.z <= this.scene.geometry.parameters.depth  + 1.5)
-        //     this.model.position.z = this.initial_pos_z;
     }
 }
 

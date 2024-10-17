@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 
 function make_random_pos_z() {
-    return Math.random() * -(Obstacle.SCENE_WIDTH / 2) + Obstacle.SCENE_WIDTH / 2 - 1 / 2;
+    return Math.random() * -(Obstacle.SCENE_DEPTH / 2) + Obstacle.SCENE_DEPTH / 2 - 1 / 2;
 }
 
 function make_random_size() {
@@ -43,15 +43,27 @@ class Obstacle {
       );
     }
   
-    move() {
+    move(move) {
+
+      if (move.arrowUp){
+          this.model.position.z += 0.2;
+      }
+
+      if(move.arrowLeft)
+            this.model.position.x += 0.01;
+
+      if(move.arrowRight)
+        this.model.position.x -= 0.01;
+
       this.model.position.z += 0.1;
+
       this.model.rotation.x += 0.01;
       this.model.rotation.y += 0.01;
       this.model.rotation.z += 0.01;
   
       if (this.model.position.z > Obstacle.SCENE_DEPTH / 2 + 1 / 2) {
         this.model.position.x = make_random_pos_x();
-        this.model.position.z = -Obstacle.SCENE_DEPTH / 2;
+        this.model.position.z = make_random_pos_z();
       }
     }
   
