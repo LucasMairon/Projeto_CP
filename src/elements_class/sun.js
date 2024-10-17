@@ -12,6 +12,20 @@ class Sun{
 
     static SCENE_WIDTH
     static SCENE_HEIGHT
+    static SCENE_DEPTH
+    
+    constructor(scene, radius_x, radius_y){
+        this.scene = scene;
+        this.radius_x = radius_x;
+        this.radius_y = radius_y;
+        this.cicles = 0;
+        this.angle = 0;
+        this.model = null;
+        this.sun_light = this.create_sun_light();
+        this.ambient_light = this.create_ambient_light();
+        this.load_texture('./texture/sun_texture.jpg');
+        this.scene.add(this.model);
+    }
 
     load_texture(path){
         this.model = new THREE.Mesh(
@@ -20,10 +34,13 @@ class Sun{
                 {map: texture_load.load(path)}
             )
         )
+        if(Sun.SCENE_DEPTH)
+            this.model.position.z = -((Sun.SCENE_DEPTH)/2);
+            
     }
 
     create_ambient_light(){
-        const ambient_light = new THREE.AmbientLight(0xffffff, 1);
+        const ambient_light = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
         this.scene.add(ambient_light);
         return ambient_light;
     }
@@ -40,20 +57,9 @@ class Sun{
         this.sun_light.intensity = sun_intensity;
     }
 
-    constructor(scene, radius_x, radius_y){
-        this.scene = scene;
-        this.radius_x = radius_x;
-        this.radius_y = radius_y;
-        this.cicles = 0;
-        this.angle = 0;
-        this.model = null;
-        this.sun_light = this.create_sun_light();
-        this.ambient_light = this.create_ambient_light();
-        this.load_texture('./texture/sun_texture.jpg');
-        this.scene.add(this.model);
-    }
 
     rotate(){
+        console.log(this.model.position)
         if(this.cicles != cicles){
             cicles = this.cicles;
             if(this.cicles % 2 == 0){
@@ -74,7 +80,7 @@ class Sun{
             this.angle = 0;
             this.cicles += 1;
         }
-        this.angle += 0.005;
+        this.angle += 0.003;
     }
 }
 
