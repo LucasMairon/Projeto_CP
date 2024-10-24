@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import Boat from "./elements_class/boat.js";
 import Obstacle from "./elements_class/obstacle.js";
-import Sun  from "./elements_class/sun.js";
+import Sun from "./elements_class/sun.js";
 
 let lifes = 5;
 
@@ -17,20 +17,29 @@ const keys = {
 const CAMERA_POSITION_Z_3_PERSON = 15;
 const CAMERA_POSITION_Y_3_PERSON = 8;
 
-const CAMERA_POSITION_Y_1_PERSON = 1.5
+const CAMERA_POSITION_Y_1_PERSON = 1.5;
+const CAMERA_POSITION_Z_1_PERSON = -1.2;
+
 
 function move_camera() {
   let position_x = boat.model.position.x;
   let position_y = boat.model.position.y;
   let position_z = boat.model.position.z;
+  let theta = 0;
+  let multiplier = 0
+
   if (keys.space) {
     position_y += CAMERA_POSITION_Y_3_PERSON;
-    let theta = boat.model.rotation.z;
-    position_z += Math.cos(theta) * CAMERA_POSITION_Z_3_PERSON;
-    position_x += Math.sin(theta) * CAMERA_POSITION_Z_3_PERSON;
-  }else{
+    multiplier = CAMERA_POSITION_Z_3_PERSON;
+    multiplier = CAMERA_POSITION_Z_3_PERSON;
+  } else {
     position_y += CAMERA_POSITION_Y_1_PERSON;
+    multiplier = CAMERA_POSITION_Z_1_PERSON;
   }
+  
+  theta = boat.model.rotation.z;
+  position_z += Math.cos(theta) * multiplier;
+  position_x += Math.sin(theta) * multiplier;
   camera.position.set(position_x, position_y, position_z);
   camera.rotation.y = boat.model.rotation.z;
 }
@@ -59,17 +68,17 @@ function create_material_with_texture(texture_path, BackSide = true) {
 }
 
 const cube_scene_materials = [
-  create_material_with_texture("./texture/scene_right.png"),
-  create_material_with_texture("./texture/scene_left.png"),
-  create_material_with_texture("./texture/scene_top.png"),
-  create_material_with_texture("./texture/scene_bottom.png"),
-  create_material_with_texture("./texture/scene_front.png"),
-  create_material_with_texture("./texture/scene_back.png"),
+  create_material_with_texture("./texture/cube_scene/scene_right.png"),
+  create_material_with_texture("./texture/cube_scene/scene_left.png"),
+  create_material_with_texture("./texture/cube_scene/scene_top.png"),
+  create_material_with_texture("./texture/cube_scene/scene_bottom.png"),
+  create_material_with_texture("./texture/cube_scene/scene_front.png"),
+  create_material_with_texture("./texture/cube_scene/scene_back.png"),
 ];
 
-const CUBE_SCENE_WIDTH = 800;
-const CUBE_SCENE_HEIGHT = 200;
-const CUBE_SCENE_DEPTH = 800;
+const CUBE_SCENE_WIDTH = 1000;
+const CUBE_SCENE_HEIGHT = 400;
+const CUBE_SCENE_DEPTH = 1000;
 
 const cube_scene_geometry = new THREE.BoxGeometry(
   CUBE_SCENE_WIDTH,
@@ -80,7 +89,6 @@ const cube_scene_geometry = new THREE.BoxGeometry(
 const cube_scene = new THREE.Mesh(cube_scene_geometry, cube_scene_materials);
 scene.add(cube_scene);
 cube_scene.receiveShadow = true;
-
 
 function collision_objects(object1, object2) {
   let d = object1.position.distanceTo(object2.position);
@@ -93,16 +101,43 @@ Obstacle.SCENE_WIDTH = CUBE_SCENE_WIDTH;
 
 const obstacles = Obstacle.create_obstacles(cube_scene);
 
-const boat = new Boat(cube_scene, "./models/boat/boat.gltf", 0, -CUBE_SCENE_HEIGHT / 2 + 1.5 , CUBE_SCENE_DEPTH / 5);
+const boat = new Boat(
+  cube_scene,
+  "./models/boat/boat.gltf",
+  0,
+  -CUBE_SCENE_HEIGHT / 2 + 1.5,
+  CUBE_SCENE_DEPTH / 2  - 150
+);
 
-const sun = new Sun(cube_scene, CUBE_SCENE_WIDTH / 1.6, CUBE_SCENE_HEIGHT / 2.4 , CUBE_SCENE_WIDTH, CUBE_SCENE_HEIGHT);
+
 Sun.SCENE_HEIGHT = CUBE_SCENE_HEIGHT;
 Sun.SCENE_WIDTH = CUBE_SCENE_WIDTH;
 Sun.SCENE_DEPTH = CUBE_SCENE_DEPTH;
 
+const sun = new Sun(
+  cube_scene,
+  CUBE_SCENE_WIDTH / 1.6,
+  CUBE_SCENE_HEIGHT / 2.4,
+  CUBE_SCENE_WIDTH,
+  CUBE_SCENE_HEIGHT
+);
+
 let total_lifes = document.querySelector(".total-lifes");
-let hearts = '';
+let hearts = "";
 total_lifes.innerHTML = "❤️❤️❤️❤️❤️";
+
+
+const listener = new THREE.AudioListener();
+const audioLoader = new THREE.AudioLoader();
+const sound = new THREE.Audio(listener)
+const context = new AudioContext()
+listener.context = context
+
+audioLoader.load(`./sounds/water-noises-241049.mp3`, function (buffer) {
+  sound.setBuffer(buffer);
+  sound.setLoop(true);
+  sound.play();
+});
 
 function animate() {
   renderer.render(scene, camera);
@@ -110,23 +145,21 @@ function animate() {
     boat.move(keys);
     move_camera();
   }
-  if(sun.model)
-    sun.rotate()
+  if (sun.model) sun.rotate();
+
   obstacles.forEach((obstacle) => {
     obstacle.move(keys);
-    if (boat.model && collision_objects(boat.model, obstacle.model)){
+    if (boat.model && collision_objects(boat.model, obstacle.model)) {
       obstacle.collision();
       lifes -= 1;
-      hearts = '';
-      for (let index = 0; index < lifes; index++) hearts += '❤️';
-        total_lifes.innerHTML = hearts;
-      if (lifes <= 0){
-        scene.remove(boat);
-        scene.remove(sun);
-        scene.remove(obstacles);
-      }
+      hearts = "";
+      for (let index = 0; index < lifes; index++) hearts += "❤️";
+      total_lifes.innerHTML = hearts;
     }
   });
+  if (lifes <= 0) {
+    camera.position.set(0, 0, -CUBE_SCENE_DEPTH);
+  }
 }
 
 renderer.setAnimationLoop(animate);
