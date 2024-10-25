@@ -68,12 +68,12 @@ function create_material_with_texture(texture_path, BackSide = true) {
 }
 
 const cube_scene_materials = [
-  create_material_with_texture("./texture/cube_scene/scene_right.png"),
-  create_material_with_texture("./texture/cube_scene/scene_left.png"),
-  create_material_with_texture("./texture/cube_scene/scene_top.png"),
-  create_material_with_texture("./texture/cube_scene/scene_bottom.png"),
-  create_material_with_texture("./texture/cube_scene/scene_front.png"),
-  create_material_with_texture("./texture/cube_scene/scene_back.png"),
+  create_material_with_texture("./texture/cube_scene/yonder_ft.jpg"),
+  create_material_with_texture("./texture/cube_scene/yonder_bk.jpg"),
+  create_material_with_texture("./texture/cube_scene/yonder_up.jpg"),
+  create_material_with_texture("./texture/cube_scene/yonder_dn.jpg"),
+  create_material_with_texture("./texture/cube_scene/yonder_rt.jpg"),
+  create_material_with_texture("./texture/cube_scene/yonder_lf.jpg"),
 ];
 
 const CUBE_SCENE_WIDTH = 1000;
@@ -88,7 +88,24 @@ const cube_scene_geometry = new THREE.BoxGeometry(
 
 const cube_scene = new THREE.Mesh(cube_scene_geometry, cube_scene_materials);
 scene.add(cube_scene);
-cube_scene.receiveShadow = true;
+cube_scene.receiveShadow = false;
+// cube_scene.castShadow = false;
+
+
+var geometry = new THREE.PlaneGeometry(CUBE_SCENE_WIDTH, CUBE_SCENE_DEPTH);
+var material = new THREE.MeshStandardMaterial({
+  side: THREE.DoubleSide,
+  transparent: true,
+  map: texture_load.load('./texture/cube_scene/yonder_dn.jpg')
+})
+
+const surface = new THREE.Mesh(geometry, material);
+surface.receiveShadow = true;
+surface.rotation.x = 1.5708
+surface.position.y = -CUBE_SCENE_HEIGHT / 2 + 0.1;
+cube_scene.add(surface);
+
+
 
 function collision_objects(object1, object2) {
   let d = object1.position.distanceTo(object2.position);
@@ -109,17 +126,19 @@ const boat = new Boat(
   CUBE_SCENE_DEPTH / 2  - 150
 );
 
+Sun.SCENE_HEIGHT = CUBE_SCENE_HEIGHT;
+Sun.SCENE_WIDTH = CUBE_SCENE_WIDTH;
+Sun.SCENE_DEPTH = CUBE_SCENE_DEPTH;
+
+
 const sun = new Sun(
   cube_scene,
   CUBE_SCENE_WIDTH / 1.6,
   CUBE_SCENE_HEIGHT / 2.4,
   CUBE_SCENE_WIDTH,
-  CUBE_SCENE_HEIGHT
+  CUBE_SCENE_HEIGHT,
 );
 
-Sun.SCENE_HEIGHT = CUBE_SCENE_HEIGHT;
-Sun.SCENE_WIDTH = CUBE_SCENE_WIDTH;
-Sun.SCENE_DEPTH = CUBE_SCENE_DEPTH;
 
 let total_lifes = document.querySelector(".total-lifes");
 let hearts = "";

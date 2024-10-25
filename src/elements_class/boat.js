@@ -37,6 +37,8 @@ export class Boat {
           object.initial_pos_y,
           object.initial_pos_z
         );
+        object.model.castShadow = true
+        object.model.receiveShadow = true
         // Object.model.material.side = THREE.BackSide;
       },
       // Funcao chamada enquanto o modelo esta carregando
