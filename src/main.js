@@ -76,9 +76,9 @@ const cube_scene_materials = [
   create_material_with_texture("./texture/cube_scene/yonder_lf.jpg"),
 ];
 
-const CUBE_SCENE_WIDTH = 1000;
-const CUBE_SCENE_HEIGHT = 400;
-const CUBE_SCENE_DEPTH = 1000;
+const CUBE_SCENE_WIDTH = 900;
+const CUBE_SCENE_HEIGHT = 200;
+const CUBE_SCENE_DEPTH = 900;
 
 const cube_scene_geometry = new THREE.BoxGeometry(
   CUBE_SCENE_WIDTH,
@@ -88,23 +88,19 @@ const cube_scene_geometry = new THREE.BoxGeometry(
 
 const cube_scene = new THREE.Mesh(cube_scene_geometry, cube_scene_materials);
 scene.add(cube_scene);
-cube_scene.receiveShadow = false;
-// cube_scene.castShadow = false;
-
 
 var geometry = new THREE.PlaneGeometry(CUBE_SCENE_WIDTH, CUBE_SCENE_DEPTH);
 var material = new THREE.MeshStandardMaterial({
   side: THREE.DoubleSide,
-  transparent: true,
   map: texture_load.load('./texture/cube_scene/yonder_dn.jpg')
 })
 
+// plano para aparição de sombras
 const surface = new THREE.Mesh(geometry, material);
 surface.receiveShadow = true;
 surface.rotation.x = 1.5708
 surface.position.y = -CUBE_SCENE_HEIGHT / 2 + 0.1;
 cube_scene.add(surface);
-
 
 
 function collision_objects(object1, object2) {

@@ -21,9 +21,9 @@ class Sun{
         this.cicles = 0;
         this.angle = 0;
         this.model = null;
+        this.load_texture('./texture/sun_texture.jpg');
         this.sun_light = this.create_sun_light();
         this.ambient_light = this.create_ambient_light();
-        this.load_texture('./texture/sun_texture.jpg');
         this.scene.add(this.model);
     }
 
@@ -36,7 +36,6 @@ class Sun{
         )
         if(Sun.SCENE_DEPTH)
             this.model.position.z = -((Sun.SCENE_DEPTH)/2);
-            
     }
 
     create_ambient_light(){
@@ -48,7 +47,7 @@ class Sun{
     create_sun_light(){
         const sun_light = new THREE.DirectionalLight(0xffffff, 1);
         sun_light.castShadow = true;
-        this.scene.add(sun_light);
+        // this.scene.add(sun_light)
         return sun_light;
     }
 
@@ -73,7 +72,7 @@ class Sun{
         }
         this.model.position.x = this.radius_x * Math.cos(this.angle);
         this.model.position.y = this.radius_y * Math.sin(this.angle);
-        this.sun_light.position.set(this.model.position.x, this.model.position.y, this.model.position.z)
+        // this.sun_light.position.set(this.model.position.x, this.model.position.y, this.model.position.z)
 
         if(this.model.position.x < -(Sun.SCENE_WIDTH / 1.9)){
             this.angle = 0;
