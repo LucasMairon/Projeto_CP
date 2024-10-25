@@ -59,7 +59,6 @@ class Sun{
 
 
     rotate(){
-        console.log(this.model.position)
         if(this.cicles != cicles){
             cicles = this.cicles;
             if(this.cicles % 2 == 0){

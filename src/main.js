@@ -139,10 +139,22 @@ const sun = new Sun(
   CUBE_SCENE_HEIGHT,
 );
 
-
 let total_lifes = document.querySelector(".total-lifes");
 let hearts = "";
 total_lifes.innerHTML = "❤️❤️❤️❤️❤️";
+
+
+const listener = new THREE.AudioListener();
+const audioLoader = new THREE.AudioLoader();
+const sound = new THREE.Audio(listener)
+const context = new AudioContext()
+listener.context = context
+
+audioLoader.load(`./sounds/water-noises-241049.mp3`, function (buffer) {
+  sound.setBuffer(buffer);
+  sound.setLoop(true);
+  sound.play();
+});
 
 function animate() {
   renderer.render(scene, camera);
